@@ -10,12 +10,20 @@ const SignUpPage = () => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
+	const [passwordError, setPasswordError] = useState("");
 	const navigate = useNavigate();
 
 	const { signup, error, isLoading } = useAuthStore();
 
 	const handleSignUp = async (e) => {
 		e.preventDefault();
+
+		// Check if passwords match
+		if (password !== confirmPassword) {
+			setPasswordError("Passwords do not match!");
+			return;
+		}
 
 		try {
 			await signup(email, password, name);
@@ -24,6 +32,7 @@ const SignUpPage = () => {
 			console.log(error);
 		}
 	};
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
@@ -59,14 +68,25 @@ const SignUpPage = () => {
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
 					/>
-					{error && <p className='text-red-500 font-semibold mt-2'>{error}</p>}
+					<Input
+						icon={Lock}
+						type='password'
+						placeholder='Confirm Password'
+						value={confirmPassword}
+						onChange={(e) => setConfirmPassword(e.target.value)}
+					/>
 					<PasswordStrengthMeter password={password} />
+
+					{/* Confirm Password Field */}
+					
+					{passwordError && <p className='text-red-500 font-semibold mt-2'>{passwordError}</p>}
+					{error && <p className='text-red-500 font-semibold mt-2'>{error}</p>}
 
 					<motion.button
 						className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white 
 						font-bold rounded-lg shadow-lg hover:from-green-600
 						hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
-						 focus:ring-offset-gray-900 transition duration-200'
+						focus:ring-offset-gray-900 transition duration-200'
 						whileHover={{ scale: 1.02 }}
 						whileTap={{ scale: 0.98 }}
 						type='submit'
@@ -87,4 +107,5 @@ const SignUpPage = () => {
 		</motion.div>
 	);
 };
+
 export default SignUpPage;
